@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
 import { interviewer } from "@/constants";
 import { createFeedback } from "@/lib/actions/general.action";
-
+import { BrainCircuit } from "lucide-react";
 enum CallStatus {
   INACTIVE = "INACTIVE",
   CONNECTING = "CONNECTING",
@@ -393,13 +393,9 @@ const Agent = ({
                 "w-[90px] h-[90px] md:w-[120px] md:h-[120px] rounded-full bg-[#13131c] border-2 flex items-center justify-center relative overflow-hidden transition-all duration-300 z-10",
                 isSpeaking ? "border-[#00F2FE] shadow-[0_0_30px_rgba(0,242,254,0.4)]" : "border-white/10"
               )}>
-                <Image
-                  src="/ai-avatar.png"
-                  alt="AI Avatar"
-                  width={80}
-                  height={80}
-                  className={cn("object-cover transition-transform duration-300 w-[60px] h-[60px] md:w-[80px] md:h-[80px]", isSpeaking && "scale-110")}
-                />
+                <div className="relative w-10 h-10 rounded-xl bg-[#00F2FE]/10 flex items-center justify-center border border-[#00F2FE]/30">
+  <BrainCircuit className="text-[#00F2FE] w-6 h-6 drop-shadow-[0_0_12px_rgba(0,242,254,0.9)]" />
+</div>
               </div>
             </div>
             

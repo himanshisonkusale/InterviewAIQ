@@ -18,6 +18,7 @@ async function Home() {
   if (!user?.id) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
+        
         <div className="bg-gradient-to-br from-[#13131c] to-[#0a0a12] border border-[#00F2FE]/20 p-8 rounded-3xl shadow-[0_0_40px_rgba(0,242,254,0.1)] text-center">
           <p className="text-xl text-[#8b949e]">Please login to continue</p>
         </div>

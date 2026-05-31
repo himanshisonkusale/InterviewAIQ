@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import Agent from "@/components/Agent";
 import { getRandomInterviewCover } from "@/lib/utils";
+import {BrainCircuit} from "lucide-react";
 
 import {
   getFeedbackByInterviewId,
@@ -29,13 +30,9 @@ const InterviewDetails = async ({ params }: RouteParams) => {
       <div className="flex flex-row gap-4 justify-between">
         <div className="flex flex-row gap-4 items-center max-sm:flex-col">
           <div className="flex flex-row gap-4 items-center">
-            <Image
-              src={getRandomInterviewCover()}
-              alt="cover-image"
-              width={40}
-              height={40}
-              className="rounded-full object-cover size-[40px]"
-            />
+            <div className="relative w-10 h-10 rounded-xl bg-[#00F2FE]/10 flex items-center justify-center border border-[#00F2FE]/30">
+  <BrainCircuit className="text-[#00F2FE] w-6 h-6 drop-shadow-[0_0_12px_rgba(0,242,254,0.9)]" />
+</div>
             <h3 className="capitalize">{interview.role} Interview</h3>
           </div>
 

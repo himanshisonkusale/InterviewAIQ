@@ -8,7 +8,7 @@ import { auth } from "@/firebase/client";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { BrainCircuit } from "lucide-react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -101,8 +101,9 @@ const AuthForm = ({ type }: { type: FormType }) => {
     <div className="card-border lg:min-w-[566px]">
       <div className="flex flex-col gap-6 card py-14 px-10">
         <div className="flex flex-row gap-2 justify-center items-center">
-          <Image src="/logo.svg" alt="logo" height={32} width={38} className="drop-shadow-[0_0_10px_rgba(0,242,254,0.8)]" />
-          <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FE] to-[#4FACFE] tracking-tight">InterviewAIQ</h2>
+<div className="relative w-10 h-10 rounded-xl bg-[#00F2FE]/10 flex items-center justify-center border border-[#00F2FE]/30">
+  <BrainCircuit className="text-[#00F2FE] w-6 h-6 drop-shadow-[0_0_12px_rgba(0,242,254,0.9)]" />
+</div>          <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FE] to-[#4FACFE] tracking-tight">InterviewAIQ</h2>
         </div>
 
         <h3>Practice job interviews with AI</h3>
