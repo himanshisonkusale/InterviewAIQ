@@ -9,7 +9,7 @@
 [![Vapi AI](https://img.shields.io/badge/Vapi_AI-7C3AED?style=for-the-badge&logo=ai&logoColor=white)](https://vapi.ai/)
 [![Vercel](https://img.shields.io/badge/Vercel-black?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
  
-**[🌐 Live Demo](https://interview-aiq.vercel.app) · [🐛 Report Bug](https://github.com/himanshisonkusale/InterviewAIQ/issues) · [✨ Request Feature](https://github.com/himanshisonkusale/InterviewAIQ/issues)**
+**[🌐 Live Demo](https://interview-aiq.vercel.app) · [📢 Report an Issue  ](https://github.com/himanshisonkusale/InterviewAIQ/issues) · [✨ Request Feature](https://github.com/himanshisonkusale/InterviewAIQ/issues)**
  
 </div>
 
