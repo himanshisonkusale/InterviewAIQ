@@ -26,7 +26,6 @@
 - [Firebase — Database Structure](#-firebase--database-structure)
 - [How It Works](#-how-it-works)
 - [Live Demo](#-live-demo)
-- [Acknowledgements](#-acknowledgements)
 - [Contributing](#-contributing)
 - [License](#-license)
 - [Author](#-author)
