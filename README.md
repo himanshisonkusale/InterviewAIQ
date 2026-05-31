@@ -1,5 +1,5 @@
 <div align="center">
-# 🎙️ InterviewAIQ
+<h1 style="font-size:3rem; font-weight:800;">InterviewAIQ</h1>
  
 ### The Future of Interview Preparation, Powered by AI
  
