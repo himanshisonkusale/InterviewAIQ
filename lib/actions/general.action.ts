@@ -1,7 +1,7 @@
 "use server";
 
-import { generateObject } from "ai";
-import { google } from "@ai-sdk/google";
+import { generateText } from "ai";
+import { groq } from "@ai-sdk/groq";
 
 import { db } from "@/firebase/admin";
 import { feedbackSchema } from "@/constants";
@@ -17,11 +17,8 @@ export async function createFeedback(params: CreateFeedbackParams) {
       )
       .join("");
 
-    const { object } = await generateObject({
-      model: google("gemini-2.0-flash-001", {
-        structuredOutputs: false,
-      }),
-      schema: feedbackSchema,
+    const { text } = await generateText({
+      model: groq("llama3-70b-8192"),
       prompt: `
         You are an AI interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories. Be thorough and detailed in your analysis. Don't be lenient with the candidate. If there are mistakes or areas for improvement, point them out.
         Transcript:
@@ -33,10 +30,28 @@ export async function createFeedback(params: CreateFeedbackParams) {
         - **Problem-Solving**: Ability to analyze problems and propose solutions.
         - **Cultural & Role Fit**: Alignment with company values and job role.
         - **Confidence & Clarity**: Confidence in responses, engagement, and clarity.
+
+        Return ONLY a valid JSON object with no extra text, no markdown, no backticks. Example format:
+        {
+          "totalScore": 80,
+          "categoryScores": [
+            {"name": "Communication Skills", "score": 80, "comment": "..."},
+            {"name": "Technical Knowledge", "score": 80, "comment": "..."},
+            {"name": "Problem-Solving", "score": 80, "comment": "..."},
+            {"name": "Cultural & Role Fit", "score": 80, "comment": "..."},
+            {"name": "Confidence & Clarity", "score": 80, "comment": "..."}
+          ],
+          "strengths": ["..."],
+          "areasForImprovement": ["..."],
+          "finalAssessment": "..."
+        }
         `,
       system:
-        "You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
+        "You are a professional interviewer analyzing a mock interview. Return only valid JSON, no extra text.",
     });
+
+    const cleanText = text.replace(/```json|```/g, "").trim();
+    const object = JSON.parse(cleanText);
 
     const feedback = {
       interviewId: interviewId,
@@ -112,10 +127,7 @@ export async function getLatestInterviews(
 export async function getInterviewsByUserId(
   userId: string
 ): Promise<Interview[] | null> {
-  // ✅ FIX ADDED (this is the only change)
-  if (!userId) {
-    return [];
-  }
+  if (!userId) return [];
 
   const interviews = await db
     .collection("interviews")
