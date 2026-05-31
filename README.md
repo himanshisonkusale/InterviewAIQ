@@ -1,21 +1,16 @@
 <div align="center">
-
-<img src="public/logo.png" alt="InterviewAIQ Logo" width="80" height="80" />
-
-# InterviewAIQ
-
+# 🎙️ InterviewAIQ
+ 
 ### The Future of Interview Preparation, Powered by AI
-
+ 
 [![Next.js](https://img.shields.io/badge/Next.js_16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![Vapi AI](https://img.shields.io/badge/Vapi_AI-7C3AED?style=for-the-badge&logo=ai&logoColor=white)](https://vapi.ai/)
 [![Vercel](https://img.shields.io/badge/Vercel-black?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
-
+ 
 **[🌐 Live Demo](https://interview-aiq.vercel.app) · [🐛 Report Bug](https://github.com/himanshisonkusale/InterviewAIQ/issues) · [✨ Request Feature](https://github.com/himanshisonkusale/InterviewAIQ/issues)**
-
-![InterviewAIQ Banner](public/Candidate_interviewing_AI_assistant.mp4)
-
+ 
 </div>
 
 ---
