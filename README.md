@@ -289,18 +289,6 @@ The 5 `categoryScores` are: **Communication Skills**, **Technical Knowledge**, *
 
 ---
 
-## 🙏 Acknowledgements
-
-- [Vapi AI](https://vapi.ai/) — Voice AI infrastructure powering real-time interview conversations
-- [Groq](https://groq.com/) — Lightning-fast LLM inference for feedback generation
-- [Firebase](https://firebase.google.com/) — Authentication and Firestore database
-- [Spline](https://spline.design/) — 3D scene design for the landing page
-- [shadcn/ui](https://ui.shadcn.com/) — Beautifully designed UI components
-- [Framer Motion](https://www.framer.com/motion/) — Animations and transitions
-- [Adrian Hajdin](https://github.com/adrianhajdin) — Original project inspiration
-
----
-
 ## 🤝 Contributing
 
 Contributions are welcome! Here's how to get started:
