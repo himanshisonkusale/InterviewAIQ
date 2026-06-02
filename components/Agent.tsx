@@ -4,12 +4,14 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Mic, Clock } from "lucide-react";
+import * as faceapi from "face-api.js";
 
 import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
 import { interviewer } from "@/constants";
 import { createFeedback } from "@/lib/actions/general.action";
 import { BrainCircuit } from "lucide-react";
+
 enum CallStatus {
   INACTIVE = "INACTIVE",
   CONNECTING = "CONNECTING",
@@ -114,9 +116,10 @@ function MicVisualizer({ active }: { active: boolean }) {
 }
 
 // ─── Webcam Feed ──────────────────────────────────────────────────────────────
-function WebcamFeed({ userName }: { userName: string }) {
+function WebcamFeed({ userName, onFaceCountChange }: { userName: string; onFaceCountChange?: (count: number) => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCamera, setHasCamera] = useState<boolean | null>(null);
+  const detectionRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     let stream: MediaStream;
@@ -127,6 +130,21 @@ function WebcamFeed({ userName }: { userName: string }) {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
+
+        // Load face-api models
+        await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+
+        // Start face detection every 2 seconds
+        detectionRef.current = setInterval(async () => {
+          if (videoRef.current) {
+            const detections = await faceapi.detectAllFaces(
+              videoRef.current,
+              new faceapi.TinyFaceDetectorOptions()
+            );
+            onFaceCountChange?.(detections.length);
+          }
+        }, 2000);
+
       } catch {
         setHasCamera(false);
       }
@@ -134,6 +152,7 @@ function WebcamFeed({ userName }: { userName: string }) {
     startCam();
     return () => {
       stream?.getTracks().forEach((t) => t.stop());
+      if (detectionRef.current) clearInterval(detectionRef.current);
     };
   }, []);
 
@@ -141,7 +160,6 @@ function WebcamFeed({ userName }: { userName: string }) {
     <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#13131c] to-[#05050A] border border-[#00F2FE]/20 flex-1 w-full max-w-lg shadow-[0_0_30px_rgba(0,242,254,0.1)] group transition-all duration-500 hover:shadow-[0_0_50px_rgba(0,242,254,0.2)] h-[260px] md:h-[360px] lg:h-[420px]">
       <div className="absolute inset-0 bg-gradient-to-br from-[#00F2FE]/[0.02] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
-      {/* Live webcam */}
       {hasCamera !== false && (
         <video
           ref={videoRef}
@@ -156,7 +174,6 @@ function WebcamFeed({ userName }: { userName: string }) {
         />
       )}
 
-      {/* Fallback */}
       {hasCamera === false && (
         <div className="flex flex-col items-center justify-center gap-4 h-full w-full">
           <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-[#00F2FE]/10 flex items-center justify-center border border-[#00F2FE]/30">
@@ -174,7 +191,6 @@ function WebcamFeed({ userName }: { userName: string }) {
         </div>
       )}
 
-      {/* Name Overlay */}
       <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-[#05050A] via-[#05050A]/80 to-transparent">
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)] animate-pulse" />
@@ -199,6 +215,26 @@ const Agent = ({
   const [messages, setMessages] = useState<SavedMessage[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [lastMessage, setLastMessage] = useState<string>("");
+
+  // ── Face Detection State ──
+  const [faceCount, setFaceCount] = useState(0);
+  const [redFlags, setRedFlags] = useState(0);
+  const isActive = callStatus === CallStatus.ACTIVE;
+
+  // Increment red flag when multiple faces detected during active call
+  useEffect(() => {
+  if (isActive && faceCount > 1) {
+    setRedFlags((prev) => {
+      const newCount = prev + 1;
+      if (newCount >= 3) {
+        // Auto terminate
+        vapi.stop();
+        setCallStatus(CallStatus.FINISHED);
+      }
+      return newCount;
+    });
+  }
+}, [faceCount, isActive]);
 
   useEffect(() => {
     const onCallStart = () => {
@@ -310,8 +346,6 @@ const Agent = ({
     vapi.stop();
   };
 
-  const isActive = callStatus === CallStatus.ACTIVE;
-
   return (
     <div className="flex flex-col items-center w-full max-w-6xl mx-auto gap-8 pt-4 pb-12 selection:bg-[#00F2FE]/30">
       
@@ -344,7 +378,36 @@ const Agent = ({
           <Mic className={cn("w-4 h-4", isActive ? "text-[#00F2FE]" : "text-white/30")} />
           <MicVisualizer active={isActive} />
         </div>
+
+        {/* ── Red Flag Counter (sirf active call me dikhega) ── */}
+        {isActive && (
+          <>
+            <div className="w-px h-6 bg-white/10" />
+            <div className="flex items-center gap-2">
+              <span className="text-red-500 text-lg">🚩</span>
+              <span className={cn(
+                "text-xs font-bold tracking-widest",
+                redFlags > 0 ? "text-red-500" : "text-white/50"
+              )}>
+                {redFlags} FLAG{redFlags !== 1 ? "S" : ""}
+              </span>
+            </div>
+          </>
+        )}
       </div>
+
+      {/* ── Multiple Face Warning ── */}
+      {isActive && faceCount > 1 && (
+        <div className="w-full max-w-4xl px-4 md:px-0">
+          <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/50 rounded-2xl px-5 py-3 animate-pulse">
+            <span className="text-red-500 text-xl">⚠️</span>
+            <p className="text-red-400 text-sm font-semibold">
+              Multiple faces detected! Only one person is allowed during the interview.
+            </p>
+            <span className="text-red-500 text-xl">🚩</span>
+          </div>
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className="w-full flex justify-center mt-2 mb-4 relative z-10 px-4 md:px-0">
@@ -381,7 +444,6 @@ const Agent = ({
           
           <div className="relative z-10 flex flex-col items-center gap-8">
             <div className="relative flex items-center justify-center">
-              {/* Pulsing rings when speaking */}
               {isSpeaking && (
                 <>
                   <div className="absolute inset-[-20px] rounded-full border border-[#00F2FE]/30 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
@@ -394,8 +456,8 @@ const Agent = ({
                 isSpeaking ? "border-[#00F2FE] shadow-[0_0_30px_rgba(0,242,254,0.4)]" : "border-white/10"
               )}>
                 <div className="relative w-10 h-10 rounded-xl bg-[#00F2FE]/10 flex items-center justify-center border border-[#00F2FE]/30">
-  <BrainCircuit className="text-[#00F2FE] w-6 h-6 drop-shadow-[0_0_12px_rgba(0,242,254,0.9)]" />
-</div>
+                  <BrainCircuit className="text-[#00F2FE] w-6 h-6 drop-shadow-[0_0_12px_rgba(0,242,254,0.9)]" />
+                </div>
               </div>
             </div>
             
@@ -408,8 +470,8 @@ const Agent = ({
           </div>
         </div>
 
-        {/* User Card */}
-        <WebcamFeed userName={userName} />
+        {/* User Card — face detection callback pass karo */}
+        <WebcamFeed userName={userName} onFaceCountChange={setFaceCount} />
       </div>
 
       {/* Transcript Box */}
@@ -429,8 +491,6 @@ const Agent = ({
           </div>
         )}
       </div>
-
-
     </div>
   );
 };
