@@ -289,7 +289,7 @@ const Agent = ({
   const [tabSwitchCount, setTabSwitchCount] = useState(0);
   const [fullscreenInitialized, setFullscreenInitialized] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-
+  const [showInstructionsModal, setShowInstructionsModal] = useState(false);
   const isActive = callStatus === CallStatus.ACTIVE;
   const hasAutoTerminated = useRef(false);
   const lastViolationRef = useRef(0);
@@ -570,6 +570,57 @@ const Agent = ({
   };
 
   return (
+     <>
+    {/* ── Instructions Modal ── */}
+    {showInstructionsModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+        <div className="relative w-full max-w-lg bg-gradient-to-b from-[#13131c] to-[#05050A] border border-[#00F2FE]/20 rounded-[2rem] p-8 shadow-[0_0_60px_rgba(0,242,254,0.15)]">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#00F2FE]/60 to-transparent rounded-t-[2rem]" />
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-[#00F2FE]/10 border border-[#00F2FE]/30 flex items-center justify-center">
+              <span className="text-xl">📋</span>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white">Interview Guidelines</h2>
+              <p className="text-xs text-[#8b949e]">Please read before starting</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3 mb-8">
+            {[
+              { icon: "1", text: "Stay in fullscreen mode throughout the interview" },
+              { icon: "2", text: "Only one person should be visible on camera at all times" },
+              { icon: "3", text: "Keep your face clearly visible in the camera" },
+              { icon: "4", text: "Do not switch tabs or minimize the browser" },
+              { icon: "5", text: "5 violations will automatically terminate the session" },
+              { icon: "6", text: "Speak clearly — your voice is being recorded and analyzed" },
+            ].map((rule, i) => (
+              <div key={i} className="flex items-center gap-3 bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-3">
+                <span className="text-lg shrink-0">{rule.icon}</span>
+                <p className="text-sm text-white/70">{rule.text}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowInstructionsModal(false)}
+              className="flex-1 py-3 rounded-full border border-white/20 text-white/60 hover:text-white hover:border-white/40 text-sm font-semibold transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                setShowInstructionsModal(false);
+                handleCall();
+              }}
+              className="flex-1 py-3 rounded-full bg-[#00F2FE] text-[#05050A] font-bold text-sm hover:opacity-90 transition-all shadow-[0_0_20px_rgba(0,242,254,0.3)]"
+            >
+              I Understand — Start Session
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    
     <div className="flex flex-col items-center w-full max-w-6xl mx-auto gap-8 pt-4 pb-12 selection:bg-[#00F2FE]/30">
 
       {/* ── REC / Timer / Mic / Flags bar ── */}
@@ -679,7 +730,8 @@ const Agent = ({
         {callStatus !== "ACTIVE" ? (
           <button
             className="relative group flex items-center justify-center gap-3 bg-[#00F2FE] text-[#05050A] font-bold text-base md:text-lg px-8 py-4 md:px-12 md:py-5 rounded-full overflow-hidden transition-all shadow-[0_0_30px_rgba(0,242,254,0.3)] hover:shadow-[0_0_50px_rgba(0,242,254,0.5)] hover:scale-105"
-            onClick={handleCall}
+            onClick={() => setShowInstructionsModal(true)}
+
           >
             <span className="relative z-10">
               {callStatus === "INACTIVE" || callStatus === "FINISHED"
@@ -761,6 +813,7 @@ const Agent = ({
         )}
       </div>
     </div>
+    </>    
   );
 };
 

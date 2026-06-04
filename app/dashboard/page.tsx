@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Zap, Activity, Target, ChevronRight } from "lucide-react";
+import { Zap, Activity, Target, ChevronRight, TrendingUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import InterviewCard from "@/components/InterviewCard";
@@ -14,11 +14,9 @@ import {
 async function Home() {
   const user = await getCurrentUser();
 
-  // ✅ FIX: prevent undefined user crash
   if (!user?.id) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        
         <div className="bg-gradient-to-br from-[#13131c] to-[#0a0a12] border border-[#00F2FE]/20 p-8 rounded-3xl shadow-[0_0_40px_rgba(0,242,254,0.1)] text-center">
           <p className="text-xl text-[#8b949e]">Please login to continue</p>
         </div>
@@ -38,7 +36,6 @@ async function Home() {
     <div className="flex flex-col gap-12 w-full pb-20 selection:bg-[#00F2FE]/30 text-white">
       {/* ── HERO CTA SECTION ── */}
       <section className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-b from-[#13131c] to-[#05050A] border border-[#00F2FE]/10 p-10 lg:p-14 group shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)] hover:shadow-[0_0_60px_-15px_rgba(0,242,254,0.15)] transition-all duration-700">
-        {/* Futuristic Background Overlays */}
         <div className="absolute inset-0 bg-[url('/pattern.png')] bg-center opacity-10 mix-blend-overlay" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00F2FE] rounded-full blur-[150px] opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity duration-700" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#4FACFE] rounded-full blur-[150px] opacity-10 pointer-events-none" />
@@ -49,23 +46,33 @@ async function Home() {
               <Zap className="w-4 h-4" />
               <span>AI-Powered Practice</span>
             </div>
-            
+
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
               Get Interview-Ready with <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FE] to-[#4FACFE]">
                 Instant Feedback
               </span>
             </h2>
-            
+
             <p className="text-lg text-[#8b949e] font-light">
               Deploy hyper-realistic AI interviewers. Analyze micro-expressions, behavioral biometrics, and technical depth with zero human bias.
             </p>
 
-            <Button asChild className="w-fit bg-[#00F2FE] text-[#05050A] hover:bg-[#4FACFE] hover:scale-105 font-bold px-8 py-6 rounded-full shadow-[0_0_20px_rgba(0,242,254,0.3)] hover:shadow-[0_0_40px_rgba(0,242,254,0.6)] transition-all mt-4 border-0">
-              <Link href="/dashboard/interview" className="flex items-center gap-2 text-base">
-                Initialize Session <ChevronRight className="w-5 h-5" />
-              </Link>
-            </Button>
+            {/* ── Dono buttons side by side ── */}
+            <div className="flex flex-wrap gap-4 mt-4">
+              <Button asChild className="w-fit bg-[#00F2FE] text-[#05050A] hover:bg-[#4FACFE] hover:scale-105 font-bold px-8 py-6 rounded-full shadow-[0_0_20px_rgba(0,242,254,0.3)] hover:shadow-[0_0_40px_rgba(0,242,254,0.6)] transition-all border-0">
+                <Link href="/dashboard/interview" className="flex items-center gap-2 text-base">
+                  Initialize Session <ChevronRight className="w-5 h-5" />
+                </Link>
+              </Button>
+
+              <Button asChild variant="outline" className="w-fit border-[#00F2FE]/40 text-[#00F2FE] hover:bg-[#00F2FE]/10 hover:scale-105 font-bold px-8 py-6 rounded-full transition-all bg-transparent">
+                <Link href="/dashboard/progress" className="flex items-center gap-2 text-base">
+                  <TrendingUp className="w-5 h-5" />
+                  View Progress
+                </Link>
+              </Button>
+            </div>
           </div>
 
           <div className="relative max-md:hidden w-full max-w-[350px] flex items-center justify-center">
@@ -114,7 +121,7 @@ async function Home() {
         </div>
       </section>
 
-      {/* ── UPCOMING / AVAILABLE INTERVIEWS ── */}
+      {/* ── AVAILABLE INTERVIEWS ── */}
       <section className="flex flex-col gap-8 mt-4 relative z-10">
         <div className="flex items-center gap-3 border-b border-white/5 pb-4">
           <div className="w-10 h-10 rounded-xl bg-[#4FACFE]/10 flex items-center justify-center border border-[#4FACFE]/20 shadow-[0_0_15px_rgba(79,172,254,0.1)]">

@@ -221,3 +221,23 @@ export async function getInterviewsByUserId(
     ...doc.data(),
   })) as Interview[];
 }
+
+// ── NEW: User ka poora feedback history fetch karo (progress tracking ke liye) ──
+export async function getUserFeedbackHistory(
+  userId: string
+): Promise<Feedback[] | null> {
+  if (!userId) return [];
+
+  const snapshot = await db
+    .collection("feedback")
+    .where("userId", "==", userId)
+    .orderBy("createdAt", "asc") // asc → chart mein left se right progress dikhega
+    .get();
+
+  if (snapshot.empty) return [];
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as Feedback[];
+}
