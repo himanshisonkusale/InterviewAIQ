@@ -11,6 +11,8 @@ interface Feedback {
   areasForImprovement: string[];
   finalAssessment: string;
   createdAt: string;
+  terminatedByFlags?: boolean;
+  redFlags?: number;
 }
 
 interface Interview {
@@ -30,6 +32,9 @@ interface CreateFeedbackParams {
   userId: string;
   transcript: { role: string; content: string }[];
   feedbackId?: string;
+  terminatedByFlags?: boolean; 
+  redFlags?: number;
+
 }
 
 interface User {

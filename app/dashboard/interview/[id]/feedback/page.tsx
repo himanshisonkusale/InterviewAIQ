@@ -35,6 +35,17 @@ const Feedback = async ({ params }: RouteParams) => {
             <Activity className="w-4 h-4" />
             <span>Analysis Complete</span>
           </div>
+          {feedback?.terminatedByFlags && (
+  <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-2xl px-5 py-4">
+    <span className="text-red-500 text-2xl">🚩</span>
+    <div>
+      <p className="text-red-400 font-bold text-base">Interview Terminated — Integrity Violation</p>
+      <p className="text-red-400/70 text-sm font-light mt-0.5">
+        This session was automatically ended after {feedback?.redFlags} red flag{feedback?.redFlags !== 1 ? "s" : ""} were detected (multiple faces / tab switch / fullscreen exit).
+      </p>
+    </div>
+  </div>
+)}
           <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
             Performance Report <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00F2FE] to-[#4FACFE] capitalize">

@@ -6,10 +6,77 @@ import { groq } from "@ai-sdk/groq";
 import { db } from "@/firebase/admin";
 import { feedbackSchema } from "@/constants";
 
+
+
 export async function createFeedback(params: CreateFeedbackParams) {
-  const { interviewId, userId, transcript, feedbackId } = params;
+  const { interviewId, userId, transcript, feedbackId, terminatedByFlags, redFlags } = params;
 
   try {
+     if (terminatedByFlags) {
+      const feedback = {
+        interviewId,
+        userId,
+
+        totalScore: 0,
+
+        categoryScores: [
+          {
+            name: "Communication Skills",
+            score: 0,
+            comment: "Interview terminated due to multiple face detection violations.",
+          },
+          {
+            name: "Technical Knowledge",
+            score: 0,
+            comment: "Interview terminated before evaluation.",
+          },
+          {
+            name: "Problem-Solving",
+            score: 0,
+            comment: "Interview terminated before evaluation.",
+          },
+          {
+            name: "Cultural & Role Fit",
+            score: 0,
+            comment: "Interview terminated before evaluation.",
+          },
+          {
+            name: "Confidence & Clarity",
+            score: 0,
+            comment: "Interview terminated before evaluation.",
+          },
+        ],
+
+        strengths: [],
+
+        areasForImprovement: [
+          "Follow interview guidelines",
+          "Ensure only one person is visible during the interview",
+        ],
+
+        finalAssessment:
+          "Interview was automatically terminated after multiple face detection violations.",
+
+        createdAt: new Date().toISOString(),
+        terminatedByFlags: true,
+        redFlags: redFlags || 0,
+      };
+
+      let feedbackRef;
+
+      if (feedbackId) {
+        feedbackRef = db.collection("feedback").doc(feedbackId);
+      } else {
+        feedbackRef = db.collection("feedback").doc();
+      }
+
+      await feedbackRef.set(feedback);
+
+      return {
+        success: true,
+        feedbackId: feedbackRef.id,
+      };
+    }
     const formattedTranscript = transcript
       .map(
         (sentence: { role: string; content: string }) =>
@@ -51,7 +118,18 @@ export async function createFeedback(params: CreateFeedbackParams) {
     });
 
     const cleanText = text.replace(/```json|```/g, "").trim();
-    const object = JSON.parse(cleanText);
+    console.log("GROQ RESPONSE:");
+    console.log(cleanText);
+   let object;
+
+try {
+  object = JSON.parse(cleanText);
+} catch (error) {
+  console.error("Invalid JSON returned by Groq");
+  console.error(cleanText);
+
+  return { success: false };
+}
 
     const feedback = {
       interviewId: interviewId,
@@ -62,6 +140,8 @@ export async function createFeedback(params: CreateFeedbackParams) {
       areasForImprovement: object.areasForImprovement,
       finalAssessment: object.finalAssessment,
       createdAt: new Date().toISOString(),
+      terminatedByFlags: terminatedByFlags,
+      redFlags: redFlags || 0,
     };
 
     let feedbackRef;
