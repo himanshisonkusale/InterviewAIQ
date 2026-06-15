@@ -34,7 +34,7 @@
 
 ## 🚀 About the Project
 
-**InterviewAIQ** is a next-generation AI-powered mock interview platform that simulates real interview experiences. It combines voice AI, live webcam sessions, and deep performance analytics to help candidates prepare smarter and interview with confidence.
+**InterviewAIQ** is a AI-powered mock interview platform that simulates real interview experiences. It combines voice AI, live webcam sessions, and deep performance analytics to help candidates prepare smarter and interview with confidence.
 
 Whether you're a frontend developer targeting a React role or a backend engineer interviewing for Python positions — InterviewAIQ generates tailored questions, conducts a real-time voice interview, and delivers a comprehensive performance report the moment your session ends.
 
@@ -43,16 +43,16 @@ Whether you're a frontend developer targeting a React role or a backend engineer
 ---
 
 ## ✨ Features
-
+ 
 ### 🎙️ Voice-Powered AI Interview
 Real-time voice conversations powered by **Vapi AI**. The AI interviewer listens, responds, and adapts — exactly like a human interviewer would.
-
+ 
 ### 📹 Live Webcam Session
 Your webcam feed replaces a static avatar during interviews, complete with a **REC indicator**, **live interview timer**, and **mic level visualizer** — building real muscle memory for video interviews.
-
+ 
 ### 🧠 Groq AI Feedback Engine
 After every session, your full transcript is analyzed by **Groq AI**, generating an instant, detailed performance report at lightning speed.
-
+ 
 ### 📊 5-Category Performance Scoring
 Every interview is scored across five core pillars:
 - **Communication Skills** — Clarity, structure, and articulation
@@ -60,23 +60,33 @@ Every interview is scored across five core pillars:
 - **Problem Solving** — Analytical thinking and approach
 - **Cultural & Role Fit** — Alignment with role expectations
 - **Confidence & Clarity** — Delivery and self-assurance
-
 ### 🎯 Role & Stack Customization
 Choose your target role, experience level (Junior / Mid / Senior), interview type (Technical / Behavioral / Mixed), and tech stack. Every question is generated specifically for you.
-
+ 
+### 🔒 AI Proctoring System
+InterviewAIQ monitors session integrity in real-time to ensure a fair interview environment:
+- **Multiple face detection** — only one person allowed on camera
+- **Face absence detection** — 10 sec countdown if face disappears → red flag
+- **Tab switch detection** — switching browser tabs triggers a violation
+- **Fullscreen enforcement** — exiting fullscreen is flagged
+- **Browser minimize detection** — window focus loss is tracked
+- **5 red flags = auto-terminate** — session ends automatically with a flagged feedback report
+### 📋 Pre-Interview Guidelines Modal
+Before every session, users must read and acknowledge the interview rules — fullscreen, single person, no tab switching — ensuring they are aware of proctoring rules before starting.
+ 
 ### 🔄 Retake Simulation
 Retake any interview directly from the feedback page to track improvement over time.
-
+ 
 ### 🌐 3D Landing Page
 Cinematic landing page featuring **Spline 3D** scenes, **Framer Motion** animations, and a product video — giving InterviewAIQ a premium SaaS feel.
-
+ 
 ### 🔐 Secure Authentication
 Email/password authentication via **Firebase Auth** with server-side session cookies for secure, persistent login.
-
+ 
 ---
-
+ 
 ## 🛠️ Tech Stack
-
+ 
 | Category | Technology |
 |---|---|
 | **Framework** | Next.js 16 (App Router, Turbopack) |
@@ -87,6 +97,7 @@ Email/password authentication via **Firebase Auth** with server-side session coo
 | **3D Graphics** | Spline (@splinetool/react-spline) |
 | **Voice AI** | Vapi AI (@vapi-ai/web v2.5) |
 | **AI / LLM** | Groq API (@ai-sdk/groq) |
+| **Face Detection** | face-api.js |
 | **Video Calls** | Daily.co (@daily-co/daily-js) |
 | **Auth & Database** | Firebase v11 (Auth + Firestore) |
 | **Backend** | Firebase Admin SDK, Next.js API Routes |
@@ -94,7 +105,7 @@ Email/password authentication via **Firebase Auth** with server-side session coo
 | **Date Handling** | Day.js |
 | **Notifications** | Sonner |
 | **Deployment** | Vercel |
-
+ 
 ---
 
 ## 📁 Project Structure
@@ -216,58 +227,62 @@ NEXT_PUBLIC_VAPI_ASSISTANT_ID=
 GROQ_API_KEY=
 ```
 
-> ⚠️ **Never commit your `.env.local` file.** It is already included in `.gitignore`.
 
 ---
 
 ## 🔥 Firebase — Database Structure
-
+ 
 InterviewAIQ uses **Firebase Auth** for authentication and **Cloud Firestore** as the database. All data is stored in 2 collections:
-
+ 
 **`interviews`** — stores each interview session
 ```
 id, userId, role, level, type, techstack[], questions[], finalized, createdAt
 ```
-
+ 
 **`feedback`** — stores AI-generated report for each interview
 ```
 id, interviewId, userId, totalScore, finalAssessment,
 strengths[], areasForImprovement[], createdAt,
-categoryScores[{ name, score, comment }]
+categoryScores[{ name, score, comment }],
+terminatedByFlags, redFlags
 ```
-
+ 
 The 5 `categoryScores` are: **Communication Skills**, **Technical Knowledge**, **Problem Solving**, **Cultural & Role Fit**, **Confidence & Clarity**.
-
+ 
 ---
-
+ 
+## 🔄 How It Works
+ 
 ```
 1. SIGN UP / SIGN IN
    └── Firebase Auth → Session cookie set server-side
-
+ 
 2. DASHBOARD
    └── View your past interviews + available interviews to take
-
+ 
 3. CREATE INTERVIEW
    └── Choose role, level, type, tech stack
    └── Vapi Assistant calls Groq → generates tailored questions
    └── Interview saved to Firestore
-
+ 
 4. LIVE SESSION  (/interview/[id])
    └── Agent.tsx initializes Vapi voice call
    └── Webcam feed goes live with REC indicator + timer + mic visualizer
+   └── Proctoring system monitors — face detection, tab switch, fullscreen
    └── Real-time transcript collected as you speak
-
+ 
 5. FEEDBACK GENERATION  (/interview/[id]/feedback)
    └── Full transcript sent to Groq AI
    └── AI returns: totalScore, 5 categoryScores, strengths,
        areasForImprovement, finalAssessment
-   └── Saved to Firestore → Performance Report rendered
-
+   └── redFlags + terminatedByFlags saved to Firestore
+   └── Performance Report rendered with integrity status
+ 
 6. RETAKE
    └── "Retake Simulation" button → reuse same interview questions
 ```
 
----
+ ---
 
 ## 🌐 Live Demo
 
@@ -303,11 +318,6 @@ git push origin feature/AmazingFeature
 
 Please make sure your code follows the existing TypeScript + ESLint conventions.
 
----
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
