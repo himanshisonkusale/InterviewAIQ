@@ -27,7 +27,6 @@
 - [How It Works](#-how-it-works)
 - [Live Demo](#-live-demo)
 - [Contributing](#-contributing)
-- [License](#-license)
 - [Author](#-author)
 
 ---
